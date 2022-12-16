@@ -243,7 +243,7 @@ public class AutoSwitchHAConnection implements HAConnection {
             haReader.registerHook(readSize -> {
                 if (readSize > 0) {
                     ReadSocketService.this.lastReadTimestamp =
-                        haService.getDefaultMessageStore().getSystemClock().now();
+                        System.currentTimeMillis();
                 }
             });
         }
@@ -261,7 +261,7 @@ public class AutoSwitchHAConnection implements HAConnection {
                         break;
                     }
 
-                    long interval = haService.getDefaultMessageStore().getSystemClock().now() - this.lastReadTimestamp;
+                    long interval = System.currentTimeMillis() - this.lastReadTimestamp;
                     if (interval > haService.getDefaultMessageStore().getMessageStoreConfig().getHaHousekeepingInterval()) {
                         LOGGER.warn("ha housekeeping, found this connection[" + clientAddress + "] expired, " + interval);
                         break;
@@ -476,7 +476,7 @@ public class AutoSwitchHAConnection implements HAConnection {
                 flowMonitor.addByteCountTransferred(writeSize);
                 if (writeSize > 0) {
                     AbstractWriteSocketService.this.lastWriteTimestamp =
-                        haService.getDefaultMessageStore().getSystemClock().now();
+                        System.currentTimeMillis();
                 }
             });
         }
@@ -565,7 +565,7 @@ public class AutoSwitchHAConnection implements HAConnection {
         }
 
         private boolean sendHeartbeatIfNeeded() throws Exception {
-            long interval = haService.getDefaultMessageStore().getSystemClock().now() - this.lastWriteTimestamp;
+            long interval = System.currentTimeMillis() - this.lastWriteTimestamp;
             if (interval > haService.getDefaultMessageStore().getMessageStoreConfig().getHaSendHeartbeatInterval()) {
                 buildTransferHeaderBuffer(this.nextTransferFromWhere, 0);
                 return this.transferData(0);

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.apache.rocketmq.common.SystemClock;
+
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageExtBatch;
@@ -524,13 +524,6 @@ public interface MessageStore {
      * @return the checkpoint component
      */
     StoreCheckpoint getStoreCheckpoint();
-
-    /**
-     * Get the system clock
-     *
-     * @return the system clock
-     */
-    SystemClock getSystemClock();
 
     /**
      * Get the commit log

@@ -53,7 +53,6 @@ import org.apache.rocketmq.common.BrokerConfig;
 import org.apache.rocketmq.common.BrokerIdentity;
 import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.ServiceThread;
-import org.apache.rocketmq.common.SystemClock;
 import org.apache.rocketmq.common.ThreadFactoryImpl;
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.UtilAll;
@@ -135,7 +134,6 @@ public class DefaultMessageStore implements MessageStore {
     private final TransientStorePool transientStorePool;
 
     private final RunningFlags runningFlags = new RunningFlags();
-    private final SystemClock systemClock = new SystemClock();
 
     private final ScheduledExecutorService scheduledExecutorService;
     private final BrokerStatsManager brokerStatsManager;
@@ -530,11 +528,11 @@ public class DefaultMessageStore implements MessageStore {
             }
         }
 
-        long beginTime = this.getSystemClock().now();
+        long beginTime = System.currentTimeMillis();
         CompletableFuture<PutMessageResult> putResultFuture = this.commitLog.asyncPutMessage(msg);
 
         putResultFuture.thenAccept(result -> {
-            long elapsedTime = this.getSystemClock().now() - beginTime;
+            long elapsedTime = System.currentTimeMillis() - beginTime;
             if (elapsedTime > 500) {
                 LOGGER.warn("DefaultMessageStore#putMessage: CommitLog#putMessage cost {}ms, topic={}, bodyLength={}",
                     elapsedTime, msg.getTopic(), msg.getBody().length);
@@ -559,11 +557,11 @@ public class DefaultMessageStore implements MessageStore {
             }
         }
 
-        long beginTime = this.getSystemClock().now();
+        long beginTime = System.currentTimeMillis();
         CompletableFuture<PutMessageResult> putResultFuture = this.commitLog.asyncPutMessages(messageExtBatch);
 
         putResultFuture.thenAccept(result -> {
-            long eclipseTime = this.getSystemClock().now() - beginTime;
+            long eclipseTime = System.currentTimeMillis() - beginTime;
             if (eclipseTime > 500) {
                 LOGGER.warn("not in lock eclipse time(ms)={}, bodyLength={}", eclipseTime, messageExtBatch.getBody().length);
             }
@@ -606,7 +604,7 @@ public class DefaultMessageStore implements MessageStore {
     @Override
     public boolean isOSPageCacheBusy() {
         long begin = this.getCommitLog().getBeginTimeInLock();
-        long diff = this.systemClock.now() - begin;
+        long diff = System.currentTimeMillis() - begin;
 
         return diff < 10000000
             && diff > this.messageStoreConfig.getOsPageCacheBusyTimeOutMills();
@@ -636,10 +634,6 @@ public class DefaultMessageStore implements MessageStore {
     @Override
     public void setBrokerInitMaxOffset(long brokerInitMaxOffset) {
         this.brokerInitMaxOffset = brokerInitMaxOffset;
-    }
-
-    public SystemClock getSystemClock() {
-        return systemClock;
     }
 
     @Override
@@ -722,7 +716,7 @@ public class DefaultMessageStore implements MessageStore {
             return compactionStore.getMessage(group, topic, queueId, offset, maxMsgNums, maxTotalMsgSize);
         } // else skip
 
-        long beginTime = this.getSystemClock().now();
+        long beginTime = System.currentTimeMillis();
 
         GetMessageStatus status = GetMessageStatus.NO_MESSAGE_IN_QUEUE;
         long nextBeginOffset = offset;
@@ -868,7 +862,7 @@ public class DefaultMessageStore implements MessageStore {
         } else {
             this.storeStatsService.getGetMessageTimesTotalMiss().add(1);
         }
-        long elapsedTime = this.getSystemClock().now() - beginTime;
+        long elapsedTime = System.currentTimeMillis() - beginTime;
         this.storeStatsService.setGetMessageEntireTimeMax(elapsedTime);
 
         // lazy init no data found.
@@ -1258,7 +1252,7 @@ public class DefaultMessageStore implements MessageStore {
 
     @Override
     public long now() {
-        return this.systemClock.now();
+        return System.currentTimeMillis();
     }
 
     @Override

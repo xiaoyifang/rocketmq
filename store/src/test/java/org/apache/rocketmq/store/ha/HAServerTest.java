@@ -26,7 +26,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import org.apache.rocketmq.common.BrokerConfig;
-import org.apache.rocketmq.common.SystemClock;
 import org.apache.rocketmq.store.CommitLog;
 import org.apache.rocketmq.store.DefaultMessageStore;
 import org.apache.rocketmq.store.PutMessageStatus;
@@ -263,7 +262,6 @@ public class HAServerTest {
         doReturn(true).when(brokerConfig).isInBrokerContainer();
         doReturn("mock").when(brokerConfig).getIdentifier();
         doReturn(brokerConfig).when(messageStore).getBrokerConfig();
-        doReturn(new SystemClock()).when(messageStore).getSystemClock();
         doAnswer(invocation -> System.currentTimeMillis()).when(messageStore).now();
         doReturn(this.storeConfig).when(messageStore).getMessageStoreConfig();
         doReturn(new BrokerConfig()).when(messageStore).getBrokerConfig();

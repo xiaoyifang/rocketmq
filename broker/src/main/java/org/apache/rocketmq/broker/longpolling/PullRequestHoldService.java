@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.rocketmq.broker.BrokerController;
 import org.apache.rocketmq.common.ServiceThread;
-import org.apache.rocketmq.common.SystemClock;
 import org.apache.rocketmq.common.constant.LoggerName;
 import org.apache.rocketmq.logging.org.slf4j.Logger;
 import org.apache.rocketmq.logging.org.slf4j.LoggerFactory;
@@ -33,7 +32,6 @@ public class PullRequestHoldService extends ServiceThread {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     protected static final String TOPIC_QUEUEID_SEPARATOR = "@";
     protected final BrokerController brokerController;
-    private final SystemClock systemClock = new SystemClock();
     protected ConcurrentMap<String/* topic@queueId */, ManyPullRequest> pullRequestTable =
         new ConcurrentHashMap<>(1024);
 
@@ -75,9 +73,9 @@ public class PullRequestHoldService extends ServiceThread {
                     this.waitForRunning(this.brokerController.getBrokerConfig().getShortPollingTimeMills());
                 }
 
-                long beginLockTimestamp = this.systemClock.now();
+                long beginLockTimestamp = System.currentTimeMillis();
                 this.checkHoldRequest();
-                long costTime = this.systemClock.now() - beginLockTimestamp;
+                long costTime = System.currentTimeMillis() - beginLockTimestamp;
                 if (costTime > 5 * 1000) {
                     log.warn("PullRequestHoldService: check hold pull request cost {}ms", costTime);
                 }

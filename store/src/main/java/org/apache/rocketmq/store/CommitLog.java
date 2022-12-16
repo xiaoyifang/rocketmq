@@ -837,7 +837,7 @@ public class CommitLog implements Swappable {
 
             putMessageLock.lock(); //spin or ReentrantLock ,depending on store config
             try {
-                long beginLockTimestamp = this.defaultMessageStore.getSystemClock().now();
+                long beginLockTimestamp = System.currentTimeMillis();
                 this.beginTimeInLock = beginLockTimestamp;
 
                 // Here settings are stored timestamp, in order to ensure an orderly
@@ -888,7 +888,7 @@ public class CommitLog implements Swappable {
                         return CompletableFuture.completedFuture(new PutMessageResult(PutMessageStatus.UNKNOWN_ERROR, result));
                 }
 
-                elapsedTimeInLock = this.defaultMessageStore.getSystemClock().now() - beginLockTimestamp;
+                elapsedTimeInLock = System.currentTimeMillis() - beginLockTimestamp;
                 beginTimeInLock = 0;
             } finally {
                 putMessageLock.unlock();
@@ -995,7 +995,7 @@ public class CommitLog implements Swappable {
 
             putMessageLock.lock();
             try {
-                long beginLockTimestamp = this.defaultMessageStore.getSystemClock().now();
+                long beginLockTimestamp = System.currentTimeMillis();
                 this.beginTimeInLock = beginLockTimestamp;
 
                 // Here settings are stored timestamp, in order to ensure an orderly
@@ -1037,7 +1037,7 @@ public class CommitLog implements Swappable {
                         return CompletableFuture.completedFuture(new PutMessageResult(PutMessageStatus.UNKNOWN_ERROR, result));
                 }
 
-                elapsedTimeInLock = this.defaultMessageStore.getSystemClock().now() - beginLockTimestamp;
+                elapsedTimeInLock = System.currentTimeMillis() - beginLockTimestamp;
                 beginTimeInLock = 0;
             } finally {
                 putMessageLock.unlock();

@@ -108,7 +108,7 @@ public class DefaultHAClient extends ServiceThread implements HAClient {
                 return false;
             }
         }
-        lastWriteTimestamp = this.defaultMessageStore.getSystemClock().now();
+        lastWriteTimestamp = System.currentTimeMillis();
         return !this.reportOffset.hasRemaining();
     }
 

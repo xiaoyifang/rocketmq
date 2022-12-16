@@ -146,7 +146,7 @@ public class DefaultHAConnection implements HAConnection {
                         break;
                     }
 
-                    long interval = DefaultHAConnection.this.haService.getDefaultMessageStore().getSystemClock().now() - this.lastReadTimestamp;
+                    long interval = System.currentTimeMillis() - this.lastReadTimestamp;
                     if (interval > DefaultHAConnection.this.haService.getDefaultMessageStore().getMessageStoreConfig().getHaHousekeepingInterval()) {
                         log.warn("ha housekeeping, found this connection[" + DefaultHAConnection.this.clientAddress + "] expired, " + interval);
                         break;
@@ -203,7 +203,7 @@ public class DefaultHAConnection implements HAConnection {
                     int readSize = this.socketChannel.read(this.byteBufferRead);
                     if (readSize > 0) {
                         readSizeZeroTimes = 0;
-                        this.lastReadTimestamp = DefaultHAConnection.this.haService.getDefaultMessageStore().getSystemClock().now();
+                        this.lastReadTimestamp = System.currentTimeMillis();
                         if ((this.byteBufferRead.position() - this.processPosition) >= 8) {
                             int pos = this.byteBufferRead.position() - (this.byteBufferRead.position() % 8);
                             long readOffset = this.byteBufferRead.getLong(pos - 8);
@@ -291,7 +291,7 @@ public class DefaultHAConnection implements HAConnection {
                     if (this.lastWriteOver) {
 
                         long interval =
-                            DefaultHAConnection.this.haService.getDefaultMessageStore().getSystemClock().now() - this.lastWriteTimestamp;
+                            System.currentTimeMillis() - this.lastWriteTimestamp;
 
                         if (interval > DefaultHAConnection.this.haService.getDefaultMessageStore().getMessageStoreConfig()
                             .getHaSendHeartbeatInterval()) {
@@ -394,7 +394,7 @@ public class DefaultHAConnection implements HAConnection {
                 if (writeSize > 0) {
                     flowMonitor.addByteCountTransferred(writeSize);
                     writeSizeZeroTimes = 0;
-                    this.lastWriteTimestamp = DefaultHAConnection.this.haService.getDefaultMessageStore().getSystemClock().now();
+                    this.lastWriteTimestamp = System.currentTimeMillis();
                 } else if (writeSize == 0) {
                     if (++writeSizeZeroTimes >= 3) {
                         break;
@@ -416,7 +416,7 @@ public class DefaultHAConnection implements HAConnection {
                     int writeSize = this.socketChannel.write(this.selectMappedBufferResult.getByteBuffer());
                     if (writeSize > 0) {
                         writeSizeZeroTimes = 0;
-                        this.lastWriteTimestamp = DefaultHAConnection.this.haService.getDefaultMessageStore().getSystemClock().now();
+                        this.lastWriteTimestamp = System.currentTimeMillis();
                     } else if (writeSize == 0) {
                         if (++writeSizeZeroTimes >= 3) {
                             break;
